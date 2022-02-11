@@ -1,20 +1,58 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      Feeds
     </ion-title>
   </ion-toolbar>
 </ion-header>
+<!-- <ion-header collapse="condense">
+  <ion-toolbar>
+    <ion-title size="large">Blank</ion-title>
+  </ion-toolbar>
+</ion-header> -->
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content fullscreen [fullscreen]="true">
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-list>
+    <ion-item *ngFor="let feed of feeds">
+    <ion-card >
+      <ion-label>{{feed.creator.nickname}}</ion-label>
+      <img [src]="feed.imageUrl" />
+      <ion-item>
+        <ion-label>{{feed.message}}</ion-label>
+        <ion-button (click)="like(feed.id)" *ngIf='!hasLike(feed.likes)' fill="outline" slot="end">Like</ion-button>
+        <ion-button *ngIf='hasLike(feed.likes)' slot="end">Unlike</ion-button>
+        <ion-badge color="medium" slot="end">Likes {{feed.likes.length}}</ion-badge>
+      </ion-item>
+
+      <ion-card-content>
+        <p *ngIf="feed.likes?.length > 0">Likes by: <span *ngFor="let like of feed.likes">
+          <b>{{like.nickname}},</b>
+        </span>
+        </p>
+        <p *ngFor="let comment of feed.comments">
+          {{comment.user.nickname}}: {{comment.message}}
+        </p>
+      </ion-card-content>
+    </ion-card>
+    </ion-item>
+  </ion-list>
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
+
+
+
+
